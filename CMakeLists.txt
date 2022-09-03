@@ -8,8 +8,9 @@ project(
 
 set(A_COMPILER_SRCS
         src/main.cpp
-        src/compile_unit.cpp
-        src/lexer.cpp)
+        src/file_utils.cpp
+        src/lexer.cpp
+        src/cfg.cpp)
 
 set(CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

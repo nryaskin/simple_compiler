@@ -5,7 +5,7 @@ extern logger::SimpleLogger g_logger;
 
 namespace lexer {
 
-std::vector<std::unique_ptr<Token>> tokenize(CompileUnit& cu) {
+std::vector<std::unique_ptr<Token>> tokenize(sc::files::SFile& cu) {
     g_logger.log(logger::Info, "tokenize >>");
     int line_num = 0;
     std::vector<std::unique_ptr<Token>> tokens;

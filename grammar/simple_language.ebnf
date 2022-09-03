@@ -1,5 +1,5 @@
-<program>   ::= <function>
-<function>  ::= "int" <id> "(" ")" "{" <statement> "}"
-<statement> ::= "return" <exp> ";"
-<exp>       ::= <integer>
-<integer>   ::= r"[0-9]\\w+"
+<program>   = <function>
+<function>  = "int" <id> "(" ")" "{" <statement> "}"
+<statement> = "return" <exp> ";"
+<exp>       = <integer>
+<integer>   = r"[0-9]\\w+"

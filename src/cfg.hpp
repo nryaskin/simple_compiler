@@ -11,7 +11,100 @@
 #include <memory>
 #include <regex>
 #include <iostream>
+#include <set>
+#include "file_utils.hpp"
+#include "tokens.hpp"
 
+
+namespace sc::cfg {
+
+    namespace str {
+        template <std::string_view const &, typename, std::string_view const &, typename>
+        struct concat;
+        template <std::string_view const &S1,
+                  std::size_t... I1,
+                  std::string_view const &S2,
+                  std::size_t... I2>
+        struct concat<S1, std::index_sequence<I1...>, S2, std::index_sequence<I2...>> {
+            static constexpr char value[] {S1[I1]...,S2[I2]..., 0};
+        };
+
+        template<std::string_view const&...>
+        struct join;
+
+        template<>
+        struct join<> {
+            static constexpr std::string_view value = "";
+        };
+
+        template<std::string_view const &S1, std::string_view const &S2>
+        struct join<S1, S2> {
+            static constexpr std::string_view value = concat<S1, std::make_index_sequence<S1.size()>,
+                                                          S2, std::make_index_sequence<S2.size()>>::value;
+        };
+
+        template<std::string_view const &S, std::string_view const &...V>
+        struct join<S, V...> {
+            static constexpr std::string_view value = join<S, join<V...>::value>::value;
+        };
+
+        template<std::string_view const &...V>
+        static constexpr auto join_v = join<V...>::value;
+
+        static constexpr std::string_view ob = "(";
+        static constexpr std::string_view cb = ")";
+        template<std::string_view const &S1>
+        struct grouping {
+            static constexpr std::string_view value = join<ob, S1 , cb>::value;
+        };
+
+        template<std::string_view const &S1, std::string_view const &q>
+        struct quantifired {
+            static constexpr std::string_view value = join<grouping<S1>::value, q>::value;
+        };
+
+
+        static constexpr std::string_view or_sep= "|";
+        template <std::string_view const&...>
+        struct or_selection;
+
+        template <std::string_view const &S1, std::string_view const &S2>
+        struct or_selection<S1, S2> {
+            static constexpr std::string_view value = join<S1,
+                                                           or_sep,
+                                                           S2>::value;
+        };
+
+        template <std::string_view const &...V>
+        static constexpr auto or_selection_v = or_selection<V...>::value;
+
+        template<std::string_view const &A1, std::string_view const &...V>
+        struct or_selection<A1, V...> {
+            static constexpr std::string_view value = or_selection<A1, or_selection<V...>::value>::value;
+        };
+    };
+
+    class Grammar {
+    public:
+        Grammar(std::string_view& fpath) {
+            auto file = sc::files::SFile(fpath);
+            for (auto &line : file) {
+            }
+        }
+    private:
+        std::set<std::string_view> terminals;
+        constexpr static std::string_view m_non_term = "<([a-zA-Z]*)>";
+        constexpr static std::string_view m_term = "\"[^ ]+\"";
+        constexpr static std::string_view m_regterm = "r\".+\"";
+        constexpr static std::string_view m_whitspace = "[ ]*";
+        constexpr static std::string_view m_eq = "=";
+        constexpr static std::string_view plus = "+";
+
+        // sreg_non_term,"[ ]*", "=", "([ ]*(", sreg_non_term, "|", sreg_term, "))+"
+    public:
+        constexpr static std::string_view sreg_line = str::join<m_non_term, m_whitspace, m_eq, str::quantifired<str::or_selection<m_non_term, m_term, m_regterm>::value, plus>::value>::value;
+    };
+};
 
 namespace lexer {
     /**

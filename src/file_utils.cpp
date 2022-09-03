@@ -1,15 +1,14 @@
-#include "compile_unit.hpp"
+#include "file_utils.hpp"
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <cstring>
 
 
-using namespace lexer;
-
 logger::SimpleLogger s_logger;
+using namespace sc::files;
 
-CompileUnit::CompileUnit(std::string_view& fpath) : m_file_path(fpath) {
+SFile::SFile(std::string_view& fpath) : m_file_path(fpath) {
     s_logger.log(logger::log_level_t::Info, "Calling Simple constructor");
 
     s_logger.log(logger::Info, m_file_path.string());
@@ -35,7 +34,7 @@ CompileUnit::CompileUnit(std::string_view& fpath) : m_file_path(fpath) {
     
 }
 
-std::tuple<std::string, int> CompileUnit::get_line(int offset) const {
+std::tuple<std::string, int> SFile::get_line(int offset) const {
     auto start_address = m_start_addr + offset;
     auto last_addr = m_start_addr + m_length;
     int bytes_read = 0;
@@ -53,7 +52,7 @@ std::tuple<std::string, int> CompileUnit::get_line(int offset) const {
     return std::make_tuple(res, bytes_read);
 }
 
-CompileUnit::~CompileUnit() {
+SFile::~SFile() {
     s_logger.log(logger::log_level_t::Info, "Calling destructor");
     if (m_start_addr) {
         if (munmap(m_start_addr, m_length) != 0) {

@@ -8,10 +8,10 @@
 #include <set>
 
 #include "cfg.hpp"
-#include "compile_unit.hpp"
+#include "file_utils.hpp"
 
 namespace lexer {
-    std::vector<std::unique_ptr<Token>> tokenize(CompileUnit& cu);
+    std::vector<std::unique_ptr<Token>> tokenize(sc::files::SFile& cu);
 }
 
 

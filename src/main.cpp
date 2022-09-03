@@ -3,8 +3,9 @@
 #include <set>
 
 #include "lexer.hpp"
-#include "compile_unit.hpp"
+#include "file_utils.hpp"
 #include "logger.hpp"
+#include "cfg.hpp"
 
 logger::SimpleLogger g_logger;
 
@@ -54,13 +55,14 @@ namespace program_options {
 namespace sl = lexer;
 
 int main(int argc, char *argv[]) {
+#if 0
     auto file_names = program_options::parse(argc, argv);
     /* Defining available terminal tokens */
     
     /* Loading compilation units */
-    std::vector<sl::CompileUnit> cus;
+    std::vector<sc::files::SFile> cus;
     for (auto& file_name: file_names) {
-        cus.push_back(sl::CompileUnit(file_name));
+        cus.push_back(sc::files::SFile(file_name));
     }
     for (auto& cu: cus) {
         for (auto &line: cu) {
@@ -73,5 +75,7 @@ int main(int argc, char *argv[]) {
         auto tokenized_cu = sl::tokenize(cu);
     }
 
+#endif
+    std::cout << sc::cfg::Grammar::sreg_line << std::endl;
     return 0;
 }
