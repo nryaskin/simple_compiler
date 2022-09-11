@@ -6,6 +6,7 @@
 #include "file_utils.hpp"
 #include "logger.hpp"
 #include "cfg.hpp"
+#include "tokens.hpp"
 
 logger::SimpleLogger g_logger;
 
@@ -52,9 +53,25 @@ namespace program_options {
     }
 }
 
-namespace sl = lexer;
+using namespace sc::tokens;
+
+constexpr std::string_view g_ret_kw = "return";
+constexpr std::string_view g_br_kw = "{";
+constexpr std::string_view g_br_close_kw = "}";
 
 int main(int argc, char *argv[]) {
+
+//    auto integer = "[0-9]\\w+"_reg;
+//    auto id = "[0-9]+"_reg;
+//    auto expr = integer;
+//    auto statement = "return" << expr << ";";
+//    auto function = "int" << id << "(" << ")" << "{" << statement << "}";
+//    auto program = function;
+
+    auto ret = KeywordToken<g_ret_kw>();
+    auto g_br = KeywordToken<g_br_kw>();
+    auto program = g_br << ret;
+
 #if 0
     auto file_names = program_options::parse(argc, argv);
     /* Defining available terminal tokens */
